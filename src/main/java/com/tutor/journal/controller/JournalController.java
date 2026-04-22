@@ -43,4 +43,9 @@ public class JournalController {
         });
         return bookingRepository.save(booking);
     }
+
+    @GetMapping("/bookings")
+    public List<Booking> getAllBookings() {
+        return bookingRepository.findAll();
+    }
 }
