@@ -25,21 +25,22 @@ public class JournalController {
         this.bookingRepository = bookingRepository;
     }
 
-    // 1. ВІДДАТИ СПИСОК РЕПЕТИТОРІВ (GET-запит)
     @GetMapping("/tutors")
     public List<Tutor> getAllTutors() {
         return tutorRepository.findAll();
     }
 
-    // 2. ВІДДАТИ ВІЛЬНІ ВІКНА (GET-запит)
-    @GetMapping("/slots")
-    public List<Slot> getAllSlots() {
-        return slotRepository.findAll();
+    @GetMapping("/slots/{tutorId}")
+    public List<Slot> getSlotsByTutor(@PathVariable Long tutorId) {
+        return slotRepository.findByTutorId(tutorId);
     }
 
-    // 3. ЗБЕРЕГТИ НОВИЙ ЗАПИС УЧНЯ (POST-запит)
     @PostMapping("/bookings")
     public Booking createBooking(@RequestBody Booking booking) {
+        slotRepository.findById(booking.getSlotId()).ifPresent(slot -> {
+            slot.setIsBooked(true);
+            slotRepository.save(slot);
+        });
         return bookingRepository.save(booking);
     }
 }
