@@ -10,8 +10,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 @SpringBootApplication
@@ -38,7 +42,7 @@ public class JournalApplication {
                     {"Математика", "Олександр Рівняння", "600", "Готую до НМТ на 190+. Пояснюю складне на пальцях."},
                     {"Математика", "Юлія Логіка", "400", "Математика для 5-9 класів. Підтягнемо оцінки за місяць."},
                     {"Математика", "Ігор Вектор", "550", "Геометрія та тригонометрія без страху. Практичні задачі."},
-                    {"Математика", "Світлана Інтеграл", "480", "Вища математика для першокурсників. Допомога з сесією."},
+                    {"Математика", "Світлана Інтеграл", "480", "Вища математика для студентів. Допомога з сесією."},
                     {"Математика", "Дмитро Число", "520", "Олімпіадна математика та розвиток критичного мислення."},
                     {"Математика", "Артем Геометр", "450", "Навчу розв'язувати стереометрію без зайвих зусиль."},
 
@@ -81,19 +85,41 @@ public class JournalApplication {
                 t.setName(data[1]);
                 t.setPrice(Integer.parseInt(data[2]));
                 t.setDescription(data[3]);
-                tutorRepo.save(t);
+                Tutor savedTutor = tutorRepo.save(t);
 
                 DayOfWeek dayOff = DayOfWeek.of(random.nextInt(7) + 1);
 
                 for (LocalDate date = start; !date.isAfter(end); date = date.plusDays(1)) {
                     if (date.getDayOfWeek() == dayOff) continue;
 
-                    int dailySlots = 2 + random.nextInt(3);
-                    for (int s = 0; s < dailySlots; s++) {
-                        int hour = 9 + random.nextInt(11);
+                    List<LocalTime> dailyTimes = new ArrayList<>();
+                    int maxSlots = 2 + random.nextInt(2); // 2 або 3 слоти на день
+                    int attempts = 0;
+
+                    while (dailyTimes.size() < maxSlots && attempts < 50) {
+                        int hour = 9 + random.nextInt(10); // 9:00 - 18:00
                         int min = random.nextBoolean() ? 0 : 30;
+                        LocalTime newTime = LocalTime.of(hour, min);
+
+                        boolean hasConflict = false;
+                        for (LocalTime existingTime : dailyTimes) {
+                            if (Duration.between(newTime, existingTime).abs().toMinutes() < 90) {
+                                hasConflict = true;
+                                break;
+                            }
+                        }
+
+                        if (!hasConflict) {
+                            dailyTimes.add(newTime);
+                        }
+                        attempts++;
+                    }
+
+                    Collections.sort(dailyTimes);
+
+                    for (LocalTime time : dailyTimes) {
                         boolean isBooked = random.nextInt(10) < 2;
-                        slotRepo.save(new Slot(t.getId(), date, LocalTime.of(hour, min), isBooked));
+                        slotRepo.save(new Slot(savedTutor.getId(), date, time, isBooked));
                     }
                 }
             }
