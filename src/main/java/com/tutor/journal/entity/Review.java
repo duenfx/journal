@@ -11,47 +11,20 @@ public class Review {
     private Long tutorId;
     private String studentName;
     private Integer rating; // 1-5
+
+    @Column(columnDefinition = "TEXT")
     private String comment;
 
     public Review() {}
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getTutorId() {
-        return tutorId;
-    }
-
-    public void setTutorId(Long tutorId) {
-        this.tutorId = tutorId;
-    }
-
-    public String getStudentName() {
-        return studentName;
-    }
-
-    public void setStudentName(String studentName) {
-        this.studentName = studentName;
-    }
-
-    public Integer getRating() {
-        return rating;
-    }
-
-    public void setRating(Integer rating) {
-        this.rating = rating;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public Long getTutorId() { return tutorId; }
+    public void setTutorId(Long tutorId) { this.tutorId = tutorId; }
+    public String getStudentName() { return studentName; }
+    public void setStudentName(String studentName) { this.studentName = studentName; }
+    public Integer getRating() { return rating; }
+    public void setRating(Integer rating) { this.rating = rating; }
+    public String getComment() { return comment; }
+    public void setComment(String comment) { this.comment = comment; }
 }
