@@ -1,6 +1,7 @@
 package com.tutor.journal.controller;
 
 import com.tutor.journal.entity.Booking;
+import com.tutor.journal.entity.Review;
 import com.tutor.journal.entity.Slot;
 import com.tutor.journal.entity.Tutor;
 import com.tutor.journal.repository.BookingRepository;
@@ -18,11 +19,13 @@ public class JournalController {
     private final TutorRepository tutorRepository;
     private final SlotRepository slotRepository;
     private final BookingRepository bookingRepository;
+    private final com.tutor.journal.repository.ReviewRepository reviewRepository;
 
-    public JournalController(TutorRepository tutorRepository, SlotRepository slotRepository, BookingRepository bookingRepository) {
+    public JournalController(TutorRepository tutorRepository, SlotRepository slotRepository, BookingRepository bookingRepository, com.tutor.journal.repository.ReviewRepository reviewRepository) {
         this.tutorRepository = tutorRepository;
         this.slotRepository = slotRepository;
         this.bookingRepository = bookingRepository;
+        this.reviewRepository = reviewRepository;
     }
 
     @GetMapping("/tutors")
@@ -69,5 +72,9 @@ public class JournalController {
             result.add(map);
         }
         return result;
+    }
+    @PostMapping("/reviews")
+    public Review createReview(@RequestBody Review review) {
+        return reviewRepository.save(review);
     }
 }
