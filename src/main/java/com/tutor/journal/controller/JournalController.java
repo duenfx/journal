@@ -48,4 +48,26 @@ public class JournalController {
     public List<Booking> getAllBookings() {
         return bookingRepository.findAll();
     }
+    @GetMapping("/bookings/user/{userId}")
+    public List<java.util.Map<String, Object>> getUserBookings(@PathVariable Long userId) {
+        List<Booking> bookings = bookingRepository.findByUserId(userId);
+        List<java.util.Map<String, Object>> result = new java.util.ArrayList<>();
+
+        for (Booking b : bookings) {
+            java.util.Map<String, Object> map = new java.util.HashMap<>();
+            map.put("bookingId", b.getId());
+
+            slotRepository.findById(b.getSlotId()).ifPresent(slot -> {
+                map.put("date", slot.getDate().toString());
+                map.put("time", slot.getTime().toString());
+
+                tutorRepository.findById(slot.getTutorId()).ifPresent(tutor -> {
+                    map.put("tutorName", tutor.getName());
+                    map.put("subject", tutor.getSubject());
+                });
+            });
+            result.add(map);
+        }
+        return result;
+    }
 }
