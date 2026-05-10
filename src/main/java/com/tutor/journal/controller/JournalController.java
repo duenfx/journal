@@ -88,4 +88,20 @@ public class JournalController {
     public List<Review> getTutorReviews(@PathVariable Long tutorId) {
         return reviewRepository.findByTutorId(tutorId);
     }
+
+    @DeleteMapping("/reviews/{id}")
+    public void deleteReview(@PathVariable Long id) {
+        reviewRepository.deleteById(id);
+    }
+
+    @DeleteMapping("/bookings/{id}")
+    public void cancelBooking(@PathVariable Long id) {
+        bookingRepository.findById(id).ifPresent(booking -> {
+            slotRepository.findById(booking.getSlotId()).ifPresent(slot -> {
+                slot.setIsBooked(false);
+                slotRepository.save(slot);
+            });
+            bookingRepository.deleteById(id);
+        });
+    }
 }
