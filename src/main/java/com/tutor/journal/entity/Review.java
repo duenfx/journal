@@ -1,6 +1,8 @@
 package com.tutor.journal.entity;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
+import jakarta.persistence.PrePersist;
 
 @Entity
 public class Review {
@@ -10,7 +12,8 @@ public class Review {
 
     private Long tutorId;
     private String studentName;
-    private Integer rating; // 1-5
+    private Integer rating;
+    private LocalDateTime createdAt;
 
     @Column(columnDefinition = "TEXT")
     private String comment;
@@ -27,4 +30,11 @@ public class Review {
     public void setRating(Integer rating) { this.rating = rating; }
     public String getComment() { return comment; }
     public void setComment(String comment) { this.comment = comment; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 }

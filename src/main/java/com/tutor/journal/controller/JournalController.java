@@ -33,8 +33,32 @@ public class JournalController {
     }
 
     @GetMapping("/tutors")
-    public List<Tutor> getAllTutors() {
-        return tutorRepository.findAll();
+    public List<Map<String, Object>> getAllTutors() {
+        List<Tutor> tutors = tutorRepository.findAll();
+        List<Map<String, Object>> response = new ArrayList<>();
+
+        for (Tutor tutor : tutors) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", tutor.getId());
+            map.put("name", tutor.getName());
+            map.put("subject", tutor.getSubject());
+            map.put("price", tutor.getPrice());
+            map.put("description", tutor.getDescription());
+
+            List<Review> reviews = reviewRepository.findByTutorId(tutor.getId());
+            if (reviews.isEmpty()) {
+                map.put("averageRating", "поки відгуків немає");
+            } else {
+                double avg = reviews.stream()
+                        .mapToInt(Review::getRating)
+                        .average()
+                        .orElse(0.0);
+                map.put("averageRating", String.format("%.2f/5", avg));
+            }
+
+            response.add(map);
+        }
+        return response;
     }
 
     @GetMapping("/slots/{tutorId}")
@@ -104,4 +128,5 @@ public class JournalController {
             bookingRepository.deleteById(id);
         });
     }
+
 }
